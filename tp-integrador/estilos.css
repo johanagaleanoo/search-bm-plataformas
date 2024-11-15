@@ -1,0 +1,54 @@
+body {
+    background-color: #121029;
+    color: #b5b3c9;
+}
+footer {
+    text-align: center;
+    color: #b5b3c9;
+    font-family: serif;
+}
+.card {
+    border-color: #b5b3c9;
+    background-color: #232152;
+    color: #b5b3c9;
+}
+.no_encontrado_movie {
+    text-align: center;
+    translate: 50%;
+}
+a {
+    text-decoration: none;
+    color: #b5b3c9;
+}
+#informacion_peliculas {
+    text-decoration: none;
+}
+#card_img_libro, #card_img_peliculas {
+    width: 80%;
+    margin: 0 auto;
+    padding: 30px;
+    max-width: 400px;
+}
+#img_logo {
+    width: 60px;
+    height: 60px;
+}
+#input_search, #input_search::placeholder {
+    background-color: #121029;
+    border-color: #232152;
+    color: #b5b3c9;
+}
+#year_filtro, #year_filtro::placeholder {
+    background-color: #121029;
+    border-color: #232152;
+    color: #b5b3c9;
+}
+#tipo_filtro {
+    background-color: #121029;
+    color: #b5b3c9;
+    border-color: #232152;
+    height: 35px;
+}
+#filtrar {
+    display: none;
+}
