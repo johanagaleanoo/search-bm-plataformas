@@ -48,7 +48,7 @@
     <script>
         window.onload= function (){
             const urlParams= new URLSearchParams (window.location.search);
-            const bookKey= urlParams.get ("bookKey"); 
+            const bookKey= urlParams.get ("bookKey").replace ("/works/", "").replace ("/books/", ""); 
 
             if (bookKey){
                 mostrar_detalles (bookKey); 
@@ -57,40 +57,59 @@
 
         function mostrar_detalles (bookKey){
             const detalles_container= document.getElementById ("detalles_libros");
+            const isWork= bookKey.endsWith ("W");
+            const api_url= `https://api.allorigins.win/get?url=${encodeURIComponent(`https://openlibrary.org/${isWork ? `works/${bookKey}` : `books/${bookKey}`}.json`)}`;
 
-            fetch (`https://openlibrary.org/works/${bookKey}.json`)
+            fetch (api_url)
                 .then (response => response.json ())
                 .then (data => {
-                    detalles_container.innerHTML= `
-                        <div class="card mx-auto" style="max-width: 600px;">
-                            <img src="${data.covers ? `https://covers.openlibrary.org/b/id/${data.covers[0]}-L.jpg` : 'https://via.placeholder.com/600x900?text=No+Image'}" class="card-img-top" alt="${data.title}">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    ${ data.title }
-                                </h5>
-                                <p class="card-text">
-                                    ${ data.description ? (typeof data.description === "string" ? data.description : data.description.value) : "Descripción no disponible" }
-                                </p>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <strong> Autor(es): </strong> ${ data.authors ? data.authors.map (a => a.name).join (", ") : "No disponible" }
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong> Año de publicación: </strong> ${ data.first_publish_date || "no disponible" }
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    `;
+                    const bookData= JSON.parse (data.contents);
+                    const cover_url= bookData.covers && bookData.covers.length > 0 ? `https://covers.openlibrary.org/b/id/${bookData.covers[0]}-L.jpg` : `https://via.placeholder.com/300x400?text=No+Image`;
+                    const description= bookData.description ? (typeof bookData.description === "string" ? bookData.description : bookData.description.value) : "Descripción no disponible";
+                    const first_publish_date= bookData.first_publish_date || "No disponible";
+
+                    let authors= "No disponible";
+                    if (bookData.authors){
+                        authors= Array.isArray (bookData.authors) ? bookData.authors.map (a => a.name || "Desconocido").join (", ") : "Desconocido";
+                    }
+
+                    render_card (detalles_container, cover_url, bookData.title, description, authors, first_publish_date);
                 })
                 .catch(error => {
                     console.log (error);
                     detalles_container.innerHTML = `
-                        <p> 
+                        <p style="text-align: center;"> 
                             No se pudo cargar la información del libro
                         </p>`;
                 });
         }   
+        function render_card (container, cover_url, title, description, authors, first_publish_date){
+            container.innerHTML= `
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="${cover_url}" class="img-fluid rounded-start" alt="${ title }">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    ${ title } 
+                                </h5>
+                                <p class="card-text">
+                                    ${ description }
+                                </p>
+                                <p class="card-text">
+                                    Autor: ${ authors }
+                                </p>
+                                <p class="card-text">
+                                    ${ first_publish_date }
+                                </p>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>
